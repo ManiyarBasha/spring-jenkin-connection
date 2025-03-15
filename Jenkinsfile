@@ -1,54 +1,59 @@
 pipeline {
     agent any
-
+ 
     environment {
-        JAR_NAME = 'spring-rest-one'
-        IMAGE_NAME = 'spring-docker-demo'
-        CONTAINER_NAME = 'spring-docker-demo-container'
+        JAR_NAME = "spring-rest-one.jar"
+        IMAGE_NAME = "spring-docker-demo"
+        CONTAINER_NAME = "spring-docker-demo-container"
     }
-
+ 
     stages {
-        stage('Clone Repository') {
+        // Step 1: Checkout Code
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/ManiyarBasha/spring-jenkin-connection.git'
+                git branch: 'master', url: 'https://github.com/ManiyarBasha/spring-rest-one.git'
             }
         }
-
-        stage('Build with Maven') {
+ 
+        // Step 2: Build with Maven
+        stage('Build') {
             steps {
                 bat 'mvn clean package'
             }
         }
-
-        stage('Run Unit Tests') {
-            steps {
-                bat 'mvn test'
-            }
-        }
-
+ 
+        // Step 3: Build Docker Image
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %IMAGE_NAME% .'
+                bat """
+                    docker build -t %IMAGE_NAME% .
+                """
             }
         }
-
-        stage('Deploy to Docker Container') {
+ 
+        // Step 4: Run Docker Container
+        stage('Deploy') {
             steps {
-                bat '''
-                docker stop %CONTAINER_NAME% || exit 0
-                docker rm %CONTAINER_NAME% || exit 0
-                docker run -d --name %CONTAINER_NAME% -p 9098:9098 %IMAGE_NAME%
-                '''
+                // Stop and remove any existing container
+                bat """
+                    docker stop %CONTAINER_NAME% || exit 0
+                    docker rm %CONTAINER_NAME% || exit 0
+                """
+ 
+                // Start the new container on port 9099
+                bat """
+                    docker run -d -p 9098:9098 --name %CONTAINER_NAME% %IMAGE_NAME%
+                """
             }
         }
     }
-
+ 
     post {
         success {
-            echo '🎉 Pipeline executed successfully!'
+            echo 'Build and deployment successful!'
         }
         failure {
-            echo '❌ Pipeline failed!'
+            echo 'Build or deployment failed!'
         }
     }
 }
