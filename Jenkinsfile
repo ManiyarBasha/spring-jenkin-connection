@@ -11,7 +11,7 @@ pipeline {
         // Step 1: Checkout Code
         stage('Checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/ManiyarBasha/spring-rest-one.git'
+                git branch: 'master', credentialsId: '23606757-721d-48d2-8ead-0784dab9c6e0',url: 'https://github.com/ManiyarBasha/spring-rest-one.git'
             }
         }
  
