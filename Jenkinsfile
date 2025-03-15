@@ -42,7 +42,7 @@ pipeline {
  
                 // Start the new container on port 9099
                 bat """
-                    docker run -d -p 9098:9098 --name %CONTAINER_NAME% %IMAGE_NAME%
+                    docker run -d -p 9050:9050 --name %CONTAINER_NAME% %IMAGE_NAME%
                 """
             }
         }
